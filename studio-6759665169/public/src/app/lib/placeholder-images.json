@@ -1,0 +1,40 @@
+{
+  "placeholderImages": [
+    {
+      "id": "app-logo",
+      "description": "A completely flat, ultra-minimalist iOS app icon. A single, clean, elegant white geometric shape (like a simple 4-point spark, a minimalist checkmark, or a sleek line-art utility symbol) in the exact center. The background is a solid, deep matte black. No 3D effects, no gradients, no shadows, no text. Extremely clean, simple, and professional vector art style.",
+      "imageUrl": "https://picsum.photos/seed/utility-minimal/512/512",
+      "imageHint": "minimalist logo"
+    },
+    {
+      "id": "blog-pomodoro",
+      "description": "A modern desk setup with a red tomato-shaped timer, a laptop, and a notepad. Soft lighting, professional photography.",
+      "imageUrl": "https://picsum.photos/seed/pomodoro/800/600",
+      "imageHint": "productivity timer"
+    },
+    {
+      "id": "blog-security",
+      "description": "Abstract digital security concept with glowing locks and binary code. Dark futuristic aesthetic.",
+      "imageUrl": "https://picsum.photos/seed/cyber-security/800/600",
+      "imageHint": "cyber security"
+    },
+    {
+      "id": "blog-zakat",
+      "description": "Elegant gold coins and a wooden charity box on a clean surface. Peaceful and spiritual atmosphere.",
+      "imageUrl": "https://picsum.photos/seed/charity/800/600",
+      "imageHint": "gold coins"
+    },
+    {
+      "id": "blog-finance",
+      "description": "A person reviewing financial charts on a tablet with a cup of coffee. Minimalist workspace.",
+      "imageUrl": "https://picsum.photos/seed/finance-plan/800/600",
+      "imageHint": "personal finance"
+    },
+    {
+      "id": "blog-wfh",
+      "description": "A beautiful, sunlit home office with plants and a clean desk. Productivity and comfort.",
+      "imageUrl": "https://picsum.photos/seed/home-office/800/600",
+      "imageHint": "home office"
+    }
+  ]
+}

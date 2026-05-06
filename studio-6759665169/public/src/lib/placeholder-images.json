@@ -1,0 +1,10 @@
+{
+  "placeholderImages": [
+    {
+      "id": "app-logo",
+      "description": "A completely flat, ultra-minimalist iOS app icon. A single, clean, elegant white geometric shape (like a simple 4-point spark, a minimalist checkmark, or a sleek line-art utility symbol) in the exact center. The background is a solid, deep matte black. No 3D effects, no gradients, no shadows, no text. Extremely clean, simple, and professional vector art style.",
+      "imageUrl": "https://picsum.photos/seed/utility-minimal/512/512",
+      "imageHint": "minimalist logo"
+    }
+  ]
+}
