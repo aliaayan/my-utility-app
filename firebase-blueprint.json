@@ -1,0 +1,112 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the NextUtils Dashboard, storing essential profile information. This entity does not store authentication credentials like passwords.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's unique email address, used for identification and communication.",
+          "format": "email"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the user account was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp indicating the last time the user's information was updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "createdAt"
+      ]
+    },
+    "UserConsent": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserConsent",
+      "type": "object",
+      "description": "Records a user's consent status regarding cookies and data usage, crucial for AdSense and analytics compliance.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserConsent record."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who provided this consent. (Relationship: User 1:N UserConsent)"
+        },
+        "acceptedCookies": {
+          "type": "boolean",
+          "description": "Indicates whether the user has accepted the cookie policy."
+        },
+        "acceptedAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the user accepted the cookie policy.",
+          "format": "date-time"
+        },
+        "policyVersion": {
+          "type": "string",
+          "description": "A version identifier for the specific cookie policy document that was accepted, allowing for tracking changes over time."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "acceptedCookies",
+        "acceptedAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores individual user profile information. Access is restricted to the owner matching 'request.auth.uid'. The document's 'id' field matches the 'userId' path parameter."
+        }
+      },
+      {
+        "path": "/users/{userId}/userConsents/{consentId}",
+        "definition": {
+          "entityName": "UserConsent",
+          "schema": {
+            "$ref": "#/backend/entities/UserConsent"
+          },
+          "description": "Stores consent records for a specific user, nested under their user profile. Includes denormalized 'userId' for authorization independence, ensuring rules do not need to read parent documents.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the User who provided the consent."
+            },
+            {
+              "name": "consentId",
+              "description": "The unique identifier for a specific UserConsent record."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed with a strong emphasis on Authorization Independence, Structural Segregation, and Path-Based Ownership to ensure security, scalability, and debuggability.\n\n1.  **`/users/{userId}` Collection:**\n    *   This top-level collection stores individual `User` profiles. The `userId` wildcard in the path directly corresponds to the `request.auth.uid` of the authenticated user. This establishes direct, path-based ownership.\n    *   **Authorization Independence:** Access to a user's document is solely determined by matching `request.auth.uid` to the `userId` in the path. This eliminates the need for `get()` calls in security rules to check parent ownership, thereby preventing broken atomic operations and simplifying rule logic. Each user document is self-sufficient for its own authorization context.\n    *   **QAPs (Query as a Principle):** A user can only perform `get` or `update` operations on their specific `/users/{userId}` document. Listing documents in the `/users` collection is implicitly restricted by this ownership model, as a user can only query for their own known `userId`, thus preventing unintentional exposure of other user profiles. This ensures that rules do not act as filters.\n\n2.  **`/users/{userId}/userConsents/{consentId}` Subcollection:**\n    *   This subcollection is nested under the respective `User` document and stores `UserConsent` records. This hierarchical structure accurately models the `User 1:N UserConsent` relationship.\n    *   **Authorization Independence (Denormalization):** The `userId` from the parent path is implicitly available for authorization. Crucially, the `UserConsent` document itself will include a `userId` field, which is a denormalization of the owner's ID. This allows security rules to check `resource.data.userId == request.auth.uid` directly, making the authorization context explicit within the document itself and entirely independent of any `get()` operations on the parent `User` document. This supports atomic creation and updates across the hierarchy.\n    *   **QAPs (Query as a Principle):** Listing operations on `/users/{userId}/userConsents` are inherently secure. A user can only list consent records within their own `/users/{userId}` path, effectively limiting the scope of the query to their owned data. The structure ensures that the `list` operation will only return documents that the requesting user is authorized to see, eliminating the need for complex, inefficient, and insecure rule-based filtering.\n    *   **Structural Segregation:** Both the `users` collection and the `userConsents` subcollection maintain a homogeneous security posture (owner-only access), which simplifies rule writing and reduces potential security vulnerabilities by avoiding mixed access requirements within the same collection/subcollection.\n\nThis design prioritizes clarity, consistency, and strict adherence to the stated principles, providing a highly secure and easily maintainable Firestore structure for user data and consent records."
+  }
+}
